@@ -27,8 +27,8 @@ $headingColor: #000;
 $headingTextShadow: none;
 $headingTextTransform: none;
 $backgroundColor: #fff;
-$linkColor: #00008B;
-$linkColorHover: lighten( $linkColor, 20% );
+$linkColor: rgb(70, 70, 184);
+$linkColorHover: darken( $linkColor, 10% );
 $selectionBackgroundColor: rgba(0, 0, 0, 0.99);
 
 
