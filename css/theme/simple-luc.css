@@ -8,7 +8,10 @@
  * reveal.js is Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
  */
 .reveal li {
-  margin-bottom: 10px; }
+  margin-bottom: 12px; }
+
+.reveal h1 {
+  font-size: 2.6em; }
 
 /*********************************************
  * GLOBAL STYLES
@@ -41,13 +44,13 @@ body {
   margin: 0 0 30px 0;
   color: black;
   font-family: "News Cycle", Impact, sans-serif;
-  line-height: 0.9em;
+  line-height: 1em;
   letter-spacing: 0.02em;
   text-transform: none;
   text-shadow: none; }
 
 .reveal h1 {
-  text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); }
+  text-shadow: none; }
 
 /*********************************************
  * LINKS
