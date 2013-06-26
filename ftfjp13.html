@@ -41,6 +41,13 @@
           <p><small>(use arrow keys to navigate)</small></p>
         </section>
 
+        <section>
+          <h2>Math</h2>
+          <p>
+            $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$
+          </p>
+        </section>
+
         <section data-markdown>
           ## Big Picture
 
@@ -53,6 +60,7 @@
 
         <section>
           <h2>Just Works<sup><small>TM</small></sup> in Eclipse</h2>
+          <p>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</p>
           <img src="https://github.com/lrytz/efftp/wiki/images/ee.png" alt="Screenshot Eclipse"/>
         </section>
 
@@ -259,13 +267,18 @@ class A(x: Int) {
     </script>
 
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-    </script>
+    <!--
+      how to minimize mathjax
+      https://github.com/mathjax/MathJax/wiki/Shrinking-MathJax-for-%22local%22-installation -->
 
     <script type="text/javascript" src="lib/js/MathJax/MathJax.js?config=TeX-AMS_HTML">
     </script>
+
     <!-- <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+    </script> -->
+
+    <!-- <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script> -->
 
   </body>
