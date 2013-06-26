@@ -15,8 +15,10 @@
 
 
 // Include theme-specific fonts
-@import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700);
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+// @import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700);
+// @import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+@import url(../../lib/font/simple-luc/NewsCycle.css);
+@import url(../../lib/font/simple-luc/Lato.css);
 
 
 // Override theme settings (see ../template/settings.scss)
@@ -27,7 +29,7 @@ $headingColor: #000;
 $headingTextShadow: none;
 $headingTextTransform: none;
 $backgroundColor: #fff;
-$linkColor: rgb(70, 70, 184);
+$linkColor: rgb(42, 86, 197);
 $linkColorHover: darken( $linkColor, 10% );
 $selectionBackgroundColor: rgba(0, 0, 0, 0.99);
 

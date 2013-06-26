@@ -190,7 +190,7 @@ class A(x: Int) {
       // Full list of configuration options available here:
       // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
-        controls: false,
+        controls: true,
         progress: true,
         history: true,
         center: true,
@@ -214,13 +214,59 @@ class A(x: Int) {
       });
 
     </script>
-<!--
+
+    <style>
+    .reveal .controls div.slide-number {
+      width: 25px;
+      left: 27px;
+      top: 33px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: .5em;
+      font-weight: bold;
+      opacity: .5;
+    }
+    </style>
+
+    <script>
+    function currentSlideNumber(event) {
+      var formattedStr;
+      if (event.indexh === 0) {
+       return '';
+      }
+      formattedStr = event.indexh;
+      if (event.indexv) {
+       formattedStr += '/' + event.indexv;
+      }
+      return formattedStr;
+    }
+
+    function setSlideNumber() {
+      var e = document.querySelector('.slide-number');
+      if (e != null) {
+        e.innerText = currentSlideNumber(event);
+      }
+    }
+
+    Reveal.addEventListener('slidechanged', setSlideNumber);
+
+    Reveal.addEventListener( 'ready', function( event ) {
+     var slideNumberDiv = document.createElement('div');
+     slideNumberDiv.classList.add('slide-number');
+     document.querySelector('.controls').appendChild(slideNumberDiv);
+     setSlideNumber();
+    });
+    </script>
+
+
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script>
 
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+    <script type="text/javascript" src="lib/js/MathJax/MathJax.js?config=TeX-AMS_HTML">
     </script>
--->
+    <!-- <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+    </script> -->
+
   </body>
 </html>

@@ -1,5 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700);
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+@import url(../../lib/font/simple-luc/NewsCycle.css);
+@import url(../../lib/font/simple-luc/Lato.css);
 /**
  * A simple theme for reveal.js presentations, similar
  * to the default theme. The accent color is darkblue.
@@ -53,7 +53,7 @@ body {
  * LINKS
  *********************************************/
 .reveal a:not(.image) {
-  color: #4646b8;
+  color: #2a56c5;
   text-decoration: none;
   -webkit-transition: color .15s ease;
   -moz-transition: color .15s ease;
@@ -62,13 +62,13 @@ body {
   transition: color .15s ease; }
 
 .reveal a:not(.image):hover {
-  color: #383893;
+  color: #21449b;
   text-shadow: none;
   border: none; }
 
 .reveal .roll span:after {
   color: #fff;
-  background: #313181; }
+  background: #1d3a86; }
 
 /*********************************************
  * IMAGES
@@ -86,7 +86,7 @@ body {
 
 .reveal a:hover img {
   background: rgba(255, 255, 255, 0.2);
-  border-color: #4646b8;
+  border-color: #2a56c5;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.55); }
 
 /*********************************************
@@ -94,31 +94,31 @@ body {
  *********************************************/
 .reveal .controls div.navigate-left,
 .reveal .controls div.navigate-left.enabled {
-  border-right-color: #4646b8; }
+  border-right-color: #2a56c5; }
 
 .reveal .controls div.navigate-right,
 .reveal .controls div.navigate-right.enabled {
-  border-left-color: #4646b8; }
+  border-left-color: #2a56c5; }
 
 .reveal .controls div.navigate-up,
 .reveal .controls div.navigate-up.enabled {
-  border-bottom-color: #4646b8; }
+  border-bottom-color: #2a56c5; }
 
 .reveal .controls div.navigate-down,
 .reveal .controls div.navigate-down.enabled {
-  border-top-color: #4646b8; }
+  border-top-color: #2a56c5; }
 
 .reveal .controls div.navigate-left.enabled:hover {
-  border-right-color: #383893; }
+  border-right-color: #21449b; }
 
 .reveal .controls div.navigate-right.enabled:hover {
-  border-left-color: #383893; }
+  border-left-color: #21449b; }
 
 .reveal .controls div.navigate-up.enabled:hover {
-  border-bottom-color: #383893; }
+  border-bottom-color: #21449b; }
 
 .reveal .controls div.navigate-down.enabled:hover {
-  border-top-color: #383893; }
+  border-top-color: #21449b; }
 
 /*********************************************
  * PROGRESS BAR
@@ -127,7 +127,7 @@ body {
   background: rgba(0, 0, 0, 0.2); }
 
 .reveal .progress span {
-  background: #4646b8;
+  background: #2a56c5;
   -webkit-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
   -moz-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
   -ms-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
