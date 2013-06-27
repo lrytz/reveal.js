@@ -37,11 +37,96 @@
           <h1>A Flow-Insensitive, Modular Effect System for Purity</h1>
           <br/>
           <p>
-            <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier.<br/>
+            <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/>
             Lukas Rytz, Nada Amin and Martin Odersky
           </p>
         </section>
 
+        <section data-markdown>
+          ## Some Uses of a Purity System
+
+          * Valuable verified documentation for programmers
+
+          * Provides flexibility in scheduling execution
+            * [DPJ](http://dpj.cs.uiuc.edu/DPJ/Home.html) uses effects to track noninterference of expressions and execute them in parallel
+
+          * Enables optimizations
+            * In Scala, when inlining a method defined in an object, the object initializer only needs to be invoked if it is impure
+        </section>
+
+        <section data-markdown>
+          ## Verifying Purity
+
+          * Pure methods implemented with local state are common: local variables, iterators, ...
+          * Aliasing makes tracking purity difficult
+          * Many existing approaches:
+            * State monad
+            * Program verification (separation logic)
+            * Ownership types
+            * Effect systems based on pointer analysis
+            * Region-based effects
+        </section>
+
+        <section data-markdown>
+          ## Goals for Our System
+
+          * Lightweight annotations, easy to use and understand
+
+          * Modular system that integrates with our generic effect checking framework
+
+          * Identify pure expressions within larger, potentially impure programs
+
+          * Applicable to existing code, don't enforce a programming discipline or require refactorings
+        </section>
+
+
+        <section data-markdown>
+          ## Built on Ideas from JPure
+
+          * Modular, intra-procedural effect analysis
+            * Unlike JPure, our system is flow-insensitive, therefore easier to integrate into higher-order languages
+
+          * Lightweight effect annotations
+            * Our system can express nested functions with effects on outer parameters
+
+          * Ownership annotations for non-shared state, freshness for methods returning newly allocated objects
+            * We introduce *conditional* freshness which is required for getters
+        </section>
+
+        <section data-markdown>
+          ## Goal of this Work
+
+          Formalizing the effect system for purity and prove soundness:
+
+          . todo nice symbol .
+
+          *A pure function does not modify any state that existed before its execution*
+
+          .
+
+          Definition of purity shared by other projects. Work on proofs still in progress.
+        </section>
+
+
+        <section data-markdown>
+          ## Example 1: Iterators
+
+          ```scala
+          trait Iterator[+T] {
+            def hasNext: Boolean @mod()
+            def next(): T @mod(this)
+          }
+          trait List[+T] {
+            def iterator(): Iterator[T] @loc()
+          }
+          def contains(l: List[Int], e: Int): Boolean @mod() = {
+            val it = l.iterator
+            while (it.hasNext)
+              if (it.next() == e) return true
+            return false
+          }
+          ```
+        </section>
 
 
         <section>
@@ -228,13 +313,13 @@ class A(x: Int) {
     <style>
     .reveal .controls div.slide-number {
       width: 25px;
-      left: 27px;
+      left: 28px;
       top: 33px;
       text-align: center;
       vertical-align: middle;
       font-size: .5em;
       font-weight: bold;
-      opacity: .5;
+      opacity: 1;
     }
     </style>
 

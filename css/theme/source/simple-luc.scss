@@ -39,15 +39,24 @@ $selectionBackgroundColor: rgba(0, 0, 0, 0.99);
 
 // some customizations
 
-$headingMarginBottom: 30px;
+$headingMarginBottom: 50px;
 
 .reveal li {
-  margin-bottom: 12px;
+  margin-bottom: 25px;
+}
+
+.reveal li li {
+  margin-bottom: 0px;
+  margin-top: 10px;
 }
 
 
 .reveal h1 {
   font-size: 2.6em;
+}
+
+.reveal pre {
+  font-size: 0.7em;
 }
 
 
