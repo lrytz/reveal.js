@@ -29,6 +29,12 @@
 
   <body>
 
+    \(
+      \def\resloc{~\circ~}
+      \def\eff{~!~}
+      \def\loc{\mathit{loc}}
+    \)
+
     <div class="reveal">
 
       <!-- Any section element inside of this container is displayed as a slide -->
@@ -43,7 +49,7 @@
         </section>
 
         <section data-markdown>
-          ## Some Uses of a Purity System
+          ## Some Uses for a Purity System
 
           * Valuable verified documentation for programmers
 
@@ -68,7 +74,7 @@
         </section>
 
         <section data-markdown>
-          ## Goals for Our System
+          ## Requirements for our System
 
           * Lightweight annotations, easy to use and understand
 
@@ -96,20 +102,24 @@
         <section data-markdown>
           ## Goal of this Work
 
-          Formalizing the effect system for purity and prove soundness:
+          Soundness of the purity effect system:
 
-          . todo nice symbol .
+          ❧
 
           *A pure function does not modify any state that existed before its execution*
 
-          .
+          ❧
 
-          Definition of purity shared by other projects. Work on proofs still in progress.
+          * Same Definition of purity used by other projects
+          * Work on proofs still in progress
         </section>
 
 
         <section data-markdown>
-          ## Example 1: Iterators
+          ## Freshness and Effects
+
+          * `@mod(a)` permits modifying the state of parameter `a`
+          * `@loc()` for methods returning freshly allocated objects
 
           ```scala
           trait Iterator[+T] {
@@ -128,6 +138,78 @@
           ```
         </section>
 
+        <section data-markdown>
+          ## Ownership and Locality
+
+          * `@local` fields are owned, defines the *locality* of an object
+          * An object is only fresh if all objects in its locality are fresh
+          * `@mod(a)` permits modifying any state in the locality of `a`
+
+          ```scala
+          class ArrayBuffer[A] {
+            @local private[this] var array = new Array[A](initSize)
+            private[this] var size = 0
+
+            def +=(elem: A): Unit @mod(this) = {
+              ensureSize(size + 1)
+              array(size) = elem
+              size += 1
+            }
+          }
+          ```
+        </section>
+
+        <section data-markdown>
+          ## Higher-Order Code
+
+          * In `@mod(a)`, parameter `a` can be from an outer method
+
+          * `@loc(t)`: fresh if `t` is fresh, e.g. getters of local fields
+
+          ```scala
+          trait A {
+            def getOwnedB(): B @loc(this)
+          }
+          def f(a: A): Unit @mod(a) = {
+            def nested(): Unit @mod(a) = a.getOwnedB.modify()
+            nested()
+          }
+          ```
+        </section>
+
+        <section data-markdown>
+          ## Limitations found in Practice
+
+          * Caching: modifications to caches are transparent to the user, but not to the type system: the state is not fresh
+
+          * Cannot express in the current system that a collection only contains fresh objects:
+
+          ```scala
+          def t(): Int @mod() = {
+            val o: Option[Counter /* @loc() */] = Some(new Counter)
+            o match {
+              case Some(c) => c.inc(); c.get()
+              case None    => 0
+            }
+          }
+          ```
+        </section>
+
+        <section>
+          <h2>Typing</h2>
+
+          <div class="left">
+
+          \(\boxed{\Gamma \vdash p : T \resloc \loc \eff e}\\[4pt]\)
+
+          \begin{gather*}
+          \frac{a}{b} \qquad
+          \frac{a}{b} \qquad
+          \end{gather*}
+
+          </div>
+
+        </section>
 
         <section>
           <h2>Math</h2>
