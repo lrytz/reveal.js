@@ -33,6 +33,13 @@
       \def\resloc{~\circ~}
       \def\eff{~!~}
       \def\loc{\mathit{loc}}
+      \def\tlet{\text{let }}
+      \def\tin{\text{ in }}
+      \def\mlocal{\text{[local] }}
+      \def\any{\text{any}}
+      \def\seq#1{\overline{#1}}
+      \def\ba{\begin{array}}
+      \def\ea{\end{array}}
     \)
 
     <div class="reveal">
@@ -196,18 +203,20 @@
         </section>
 
         <section>
-          <h2>Typing</h2>
+          <h2>Formal Language</h2>
 
-          <div class="left">
+          \(\ba{lrl}
+            t    & ::= & \tlet x = p \tin t \mid x.l := y \mid x \\
+            p    & ::= & (x: T) \rightarrow t \mid x~y \mid \{\seq{\mlocal l = x}\} \mid x.l \mid t \\
+            T    & ::= & (x: T) \xrightarrow{e}_{\loc} T \mid \{\seq{\mlocal l: T}\} \\
+            e    & ::= & \seq{x} \mid \any \\
+            \loc & ::= & \seq{x} \mid \any
+          \ea\)
 
-          \(\boxed{\Gamma \vdash p : T \resloc \loc \eff e}\\[4pt]\)
-
-          \begin{gather*}
-          \frac{a}{b} \qquad
-          \frac{a}{b} \qquad
-          \end{gather*}
-
-          </div>
+          \(\ba{l}
+            \\[6pt]
+            \Gamma ::= x: T \resloc \loc \qquad \boxed{\Gamma \vdash p : T \resloc \loc \eff e}\\[4pt]
+          \ea\)
 
         </section>
 
@@ -443,6 +452,13 @@ class A(x: Int) {
 
     <script type="text/javascript" src="lib/js/MathJax/MathJax.js?config=TeX-AMS_HTML"></script>
 
+    <script>
+    // before sync(), the slide layout is broken. after type setting the slide content is
+    // longer, so the slide needs to be re-centered on the screen.
+    MathJax.Hub.Register.StartupHook("End",
+      function () { Reveal.sync(); }
+    );
+    </script>
     <!--
       mathjax from cdn
 
