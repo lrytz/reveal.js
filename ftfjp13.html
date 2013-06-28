@@ -432,14 +432,14 @@
 
           * Multiple annotations for multiple domains
             ```scala
-            def div(a: Int, b: Int): Int @noIo @mod() @throws[DivE] = ..
+            def div(a: Int, b: Int): Int @noIo @mod() @throws[DivByZero] = ...
             ```
 
           * By default, non-annotated domains are impure
 
-          * The `@pure` annotation changes the default to purity
+          * The `@pure` annotation applies to all effect domains and marks them pure by default
             ```scala
-            def div(a: Int, b: Int): Int @pure @throws[DivE] = ..
+            def div(a: Int, b: Int): Int @pure @throws[DivByZero] = ...
             ```
         </section>
 
