@@ -26,6 +26,16 @@
 .reveal code {
   font-weight: lighter; }
 
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  hyphens: none; }
+
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
