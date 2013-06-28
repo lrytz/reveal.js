@@ -30,7 +30,7 @@
   <body>
 
     \(
-      \def\resloc{~\circ~}
+      \def\resloc{\,\circ\,}
       \def\eff{~!~}
       \def\loc{\mathit{loc}}
       \def\tlet{\text{let }}
@@ -40,6 +40,9 @@
       \def\seq#1{\overline{#1}}
       \def\ba{\begin{array}}
       \def\ea{\end{array}}
+      \def\ts{\vdash}
+      \def\pure{\emptyset}
+      \def\fresh{\emptyset}
     \)
 
     <div class="reveal">
@@ -215,16 +218,83 @@
 
           \(\ba{l}
             \\[6pt]
-            \Gamma ::= x: T \resloc \loc \qquad \boxed{\Gamma \vdash p : T \resloc \loc \eff e}\\[4pt]
+            \Gamma ::= x: T \resloc \loc \qquad \boxed{\Gamma \ts p : T \resloc \loc \eff e}\\[4pt]
           \ea\)
 
         </section>
 
+
         <section>
-          <h2>Math</h2>
+          <h2>Example: Counter Object</h2>
+
+          \(
+            \tlet c = \{x = 1\} \tin \\
+            \tlet \mathit{inc} = (\_: \{\}) \rightarrow (\tlet v = c.x \tin c.x := (v+1)) \tin \\
+            \tlet \_ = inc~\{\} \tin \\
+            \tlet r = c.x \tin r
+          \)
+
           <p>
-            \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}\]
+            <br/>
+            <ul>
+              <li>Function \(\mathit{inc}\) has an effect on \(c\) from its environment</li>
+              <li>Object \(c\) is freshly allocated, effects on it can be masked</li>
+            </ul>
           </p>
+
+        </section>
+
+        <section>
+          <h2>Example: Counter Object</h2>
+
+          <p class="left">Typing derivation for the body of \(\mathit{inc}\):</p><br/>
+          <div style="font-size:0.8em">
+          \[\ba{l}
+            \frac{
+              \Gamma_c \ts c.x : \text{Int} \resloc \any \eff \pure \quad
+              \frac{\displaystyle
+                \Gamma_c,\Gamma_v \ts v+1 : \text{Int} \resloc \any \eff \pure
+              }{\displaystyle
+                \Gamma_c,\Gamma_v \ts c.x := (v+1) : \{x:\text{Int}\} \resloc c \eff c
+              }
+            }{
+              \Gamma_c \ts \tlet v = c.x \tin c.x := (v+1): \{x:\text{Int}\} \resloc c \eff c
+            } \\[12pt]
+
+            \qquad \ba{rl}
+             \text{where } & \Gamma_c = c: \{x:\text{Int}\} \resloc c, \\
+                           & \Gamma_v = v:\text{Int} \resloc \any
+            \ea
+          \ea\]
+          </div>
+        </section>
+
+
+        <section>
+          <h2>Example: Counter Object</h2>
+          <div style="float:right;font-size:0.7em">
+          \(\boxed{
+            \tlet c = \{x = 1\} \tin \\
+            \tlet \mathit{inc} = (\_: \{\}) \rightarrow (\tlet v = c.x \tin c.x := (v+1)) \tin \\
+            \tlet \_ = inc~\{\} \tin \quad
+            \tlet r = c.x \tin \quad r
+          }\)
+          </div>
+
+          <p class="left">Typing the let binding for \(c\):</p><br/><br/>
+          <div style="font-size:0.9em">
+          \[\ba{l}
+            \frac{
+              \emptyset \ts \{x = 1\}: \{x:\text{Int}\} \resloc \fresh \eff \pure \quad
+              \Gamma_c \ts \ldots : \text{Int} \resloc any \eff c
+            }{
+              \emptyset \ts \tlet c = \{x = 1\} \tin \ldots : \text{Int} \resloc \any \eff \pure
+            } \\[12pt]
+            \qquad \text{where } \Gamma_c = \{x:\text{Int}\} \resloc c
+          \ea\]
+          </div>
+
+
         </section>
 
         <section data-markdown>
