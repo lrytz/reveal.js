@@ -544,10 +544,10 @@ class A(x: Int) {
       return formattedStr;
     }
 
-    function setSlideNumber() {
+    function setSlideNumber(event) {
       var e = document.querySelector('.slide-number');
       if (e != null) {
-        e.innerText = currentSlideNumber(event);
+        e.innerHTML = currentSlideNumber(event);
       }
     }
 
@@ -557,7 +557,7 @@ class A(x: Int) {
      var slideNumberDiv = document.createElement('div');
      slideNumberDiv.classList.add('slide-number');
      document.querySelector('.controls').appendChild(slideNumberDiv);
-     setSlideNumber();
+     setSlideNumber(event);
     });
     </script>
 
