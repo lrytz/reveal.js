@@ -43,6 +43,10 @@
       \def\ts{\vdash}
       \def\pure{\emptyset}
       \def\fresh{\emptyset}
+      \newcommand{\colr}[2]{\colorbox{#1}{$#2$}}
+      \def\state#1{\left<#1\right>}
+      \def\halt{\text{halt}}
+      \def\evalto{\longrightarrow}
     \)
 
     <div class="reveal">
@@ -53,7 +57,7 @@
           <h1>A Flow-Insensitive, Modular Effect System for Purity</h1>
           <br/>
           <p>
-            <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/>
+            <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/><br/>
             Lukas Rytz, Nada Amin and Martin Odersky
           </p>
         </section>
@@ -208,6 +212,9 @@
         <section>
           <h2>Formal Language</h2>
 
+          A lambda calculus with mutable records
+
+          <div style="font-size:0.9em"><br/>
           \(\ba{lrl}
             t    & ::= & \tlet x = p \tin t \mid x.l := y \mid x \\
             p    & ::= & (x: T) \rightarrow t \mid x~y \mid \{\seq{\mlocal l = x}\} \mid x.l \mid t \\
@@ -220,6 +227,7 @@
             \\[6pt]
             \Gamma ::= x: T \resloc \loc \qquad \boxed{\Gamma \ts p : T \resloc \loc \eff e}\\[4pt]
           \ea\)
+          </div>
 
         </section>
 
@@ -247,7 +255,14 @@
         <section>
           <h2>Example: Counter Object</h2>
 
+          <div style="float:right;font-size:0.7em">
+          \(\boxed{
+            \tlet c = \{x = 1\} \tin \\
+            \tlet \mathit{inc} = (\_: \{\}) \rightarrow (\tlet v = c.x \tin c.x := (v+1))
+          }\)
+          </div>
           <p class="left">Typing derivation for the body of \(\mathit{inc}\):</p><br/>
+
           <div style="font-size:0.8em">
           \[\ba{l}
             \frac{
@@ -285,33 +300,110 @@
           <div style="font-size:0.9em">
           \[\ba{l}
             \frac{
-              \emptyset \ts \{x = 1\}: \{x:\text{Int}\} \resloc \fresh \eff \pure \quad
-              \Gamma_c \ts \ldots : \text{Int} \resloc any \eff c
+              \emptyset \ts \{x = 1\}: \{x:\text{Int}\} \resloc \colr{SkyBlue}{\fresh} \eff \colr{RedOrange}{\pure} \quad
+              \Gamma_c \ts \ldots : \text{Int} \resloc \any \eff \colr{RedOrange}{c}
             }{
-              \emptyset \ts \tlet c = \{x = 1\} \tin \ldots : \text{Int} \resloc \any \eff \pure
+              \emptyset \ts \tlet \colr{YellowGreen}{c} = \{x = 1\} \tin \ldots : \text{Int} \resloc \any \eff \underbrace{[\colr{SkyBlue}{\fresh} / \colr{YellowGreen}{c}](\colr{RedOrange}{\pure} \sqcup \colr{RedOrange}{c})}_\emptyset
             } \\[12pt]
             \qquad \text{where } \Gamma_c = \{x:\text{Int}\} \resloc c
           \ea\]
           </div>
-
-
         </section>
+
+
+        <section>
+          <h2>Dynamic Semantics</h2>
+
+          <ul>
+            <li>Machine states \(\state{H,V,K,p}\) consist of
+              <ul>
+                <li>a heap \(~H ::= \emptyset \mid H, r \mapsto \{\mlocal l = v\}\)</li>
+                <li>a stack \(~V ::= \emptyset \mid V, x \mapsto v\)</li>
+                <li>a continuation \(~K ::= \halt \mid [x;V;K;p]\)</li>
+                <li>where \(~v ::= r \mid [(x: T) \rightarrow t;V]\)</li>
+              </ul>
+            </li>
+
+            <li>Stack &amp; continuations: no bare references in terms, no duplication of function arguments through substitution</li>
+          </ul>
+        </section>
+
+
+        <section>
+          <h2>Type Safety</h2>
+          <ul>
+            <li>Progress \(~\state{H,V,K,p} \evalto \state{H',V',K',p'}~\) goes from well-formed to well-formed</li>
+            <li>Types and effects are preserved: if \(p\) is pure, then so is \(p'\)</li>
+
+            <li>Some variables needs to be <em>fresh</em> in the typing environment:
+              <ul>
+                <li>\(\tlet c = \{x=1\} \tin c.x := 2~~\) evaluates to \(~~c.s := 2\)</li>
+                <li>Can only type check as pure if \(~c: \{x:\text{Int}\} \resloc \colr{RedOrange}{\fresh} \in \Gamma\)</li>
+              </ul>
+            </li>
+
+            <li>In well-formed states, the locality of fresh variables in \(\,\Gamma\) is ensured
+              to be separate from all other state</li>
+          </ul>
+        </section>
+
+
+        <section>
+          <h2>Soundness</h2>
+          <ul>
+            <li>Purity: if \(p\) types as pure, then its evaluation does not modify existing state &mdash; however it can modify fresh state:</li>
+
+            <div style="font-size:0.9em">
+            \[\ba{l}
+              \boxed{\tlet c = \{x=1\} ~~\tin~~ c.x := 2} \\[6pt]
+
+              \state{\emptyset; \emptyset; \halt; \tlet c = \ldots} \evalto \\
+              \state{\emptyset; \emptyset; [c;\emptyset;\halt;c.x := 2];\{x=1\}} \evalto \\
+              \state{r_c \mapsto \colr{YellowGreen}{\{x=1\}}; c \mapsto r_c; \halt; \colr{RedOrange}{c.x := 2}} \evalto \\
+              \state{r_c \mapsto \colr{YellowGreen}{\{x=2\}}; c \mapsto r_c; \halt; c}
+            \ea\]
+            </div><br/>
+
+            <li>By preservation \(~~c.x := 2~~\) types as pure, but \(c\) is fresh</li>
+
+          </ul>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p>Live-coding demo at the end of the workshop</p>
+          <p><img src="images/ee.png" alt="Screenshot Eclipse" style="width:800px;height:auto;"/></p>
+        </section>
+
+
+        <section data-markdown>
+          # Q &amp; A
+        </section>
+
+
+
+        <section>
+          <h1>Effect Typing for Scala</h1>
+          <br/>
+          <p>Tool Demo of the <a href="https://github.com/lrytz/efftp">Effects Plugin for Scala</a></p>
+          <br/>
+          <p>
+            <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/><br/>
+            Lukas Rytz
+          </p>
+        </section>
+
+
 
         <section data-markdown>
           ## Big Picture
 
-          * A [compiler plugin](https://github.com/lrytz/efftp) for stock Scala 2.10.1
+          * A [compiler plugin](https://github.com/lrytz/efftp) for Scala 2.10.1 (`scalac`, REPL, Eclipse)
           * Entirely based on annotations, no changes to Scala's syntax
           * Effect-annotated code compiles without the plugin (it's a [pluggable type system](http://bracha.org/pluggableTypesPosition.pdf))
           * Currently supports I/O effects, checked exceptions and purity (state effects)
           * Documentation on the [Github Wiki](https://github.com/lrytz/efftp/wiki)
         </section>
-
-        <section>
-          <h2>Just Works<sup><small>TM</small></sup> in Eclipse</h2>
-          <img src="images/ee.png" alt="Screenshot Eclipse"/>
-        </section>
-
 
         <section data-markdown>
           ## Syntax
@@ -332,19 +424,22 @@
             ```
         </section>
 
+
+
+
         <section data-markdown>
           ## Multiple Effect Domains
 
-          * Effect annotations are simply put next to each other
+          * Multiple annotations for multiple domains
             ```scala
-            def div(a: Int, b: Int): Int @noIo @mod() @throws[DivByZero] = ...
+            def div(a: Int, b: Int): Int @noIo @mod() @throws[DivE] = ..
             ```
 
           * By default, non-annotated domains are impure
 
-          * The `@pure` annotation marks a method pure across all effect domains
+          * The `@pure` annotation changes the default to purity
             ```scala
-            def div(a: Int, b: Int): Int @pure @throws[DivByZero] = ...
+            def div(a: Int, b: Int): Int @pure @throws[DivE] = ..
             ```
         </section>
 
@@ -360,7 +455,7 @@
 
           * The _relative effect annotation_ `@pure(f)` marks `h` as pure, up to the effect of `f` (more precisely: `f.apply`)
 
-          * Relative effects are not tied to function types
+          * Relative effects work with arbitrary types (not just functions)
             ```scala
             def sayHi(g: Greeter, name: String): Unit @pure(g.greet(%)) = {
               g.greet(name)
@@ -368,58 +463,10 @@
             ```
         </section>
 
-        <section data-markdown>
-          ## Purity
-
-          * A method is pure, annotated `@mod()` (or `@pure`) if it does not modify any state that existed before its execution
-
-          * The annotation `@mod(c)` allows modifying fields of parameter `c`
-            ```scala
-            def inc(c: Counter): Unit @pure @mod(c) = {
-              c.value = c.value + 1
-            }
-            ```
-
-          * Modifying freshly allocated state within a method is not observable, therefore allowed:
-            ```scala
-            def counterFrom(i: Int): Counter @pure = {
-              val c = new Counter
-              for (_ &larr; 0 until i) inc(c)
-              c
-            }
-            ```
-        </section>
-
-        <section data-markdown>
-          ## Freshness / Returned Locality
-
-          * The `@loc` annotation denotes the locality of the object returned by a method
-            ```scala
-            def inc(c: Counter): Counter @mod(c) @loc(c) = {
-              c.inc()
-              c
-            }
-            ```
-
-          * Constructors and factory methods a new object on every invocation, annotated `@loc()`
-            ```scala
-            def counterFromTwo: Counter @pure @loc() = {
-              val c = new Counter
-              c.inc().inc()
-            }
-            ```
-        </section>
 
         <section data-markdown>
           # Demo!
         </section>
-
-<!--
-        <section>
-          <h1>head</h1>
-          If $\Gamma$ then yes
-        </section>
- -->
 
 <!--
         <section>
@@ -528,6 +575,11 @@ class A(x: Int) {
     MathJax.Hub.Register.StartupHook("End",
       function () { Reveal.sync(); }
     );
+    MathJax.Hub.Config({
+      TeX: {
+        extensions: ["color.js"]
+      }
+    });
     </script>
     <!--
       mathjax from cdn

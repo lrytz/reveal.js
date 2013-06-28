@@ -61,9 +61,12 @@ $headingMarginBottom: 50px;
   font-size: 0.7em;
 }
 
-
 .reveal .left {
   text-align: left;
+}
+
+.reveal code {
+  font-weight: lighter;
 }
 
 // Theme template ------------------------------
