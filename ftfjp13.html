@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Effect Typing for Scala</title>
+    <title>A Flow-Insensitive, Modular Effect System for Purity</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/theme/simple-luc.css" id="theme">
 
     <!-- For syntax highlighting -->
-    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="lib/css/highlight-default-luc.css">
 
     <!-- If the query includes 'print-pdf', use the PDF print sheet -->
     <script>
@@ -40,9 +40,11 @@
           <br/>
           <p>
             <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/><br/>
-            Lukas Rytz, Nada Amin and Martin Odersky
+            Lukas Rytz, Nada Amin and Martin Odersky<br/>
+            EPFL, Switzerland
           </p>
 
+          <div style="visibility:hidden">
           \(
             \def\resloc{\,\circ\,}
             \def\eff{~!~}
@@ -62,9 +64,16 @@
             \def\halt{\text{halt}}
             \def\evalto{\longrightarrow}
           \)
+          </div>
+
+          <aside class="notes" data-markdown>
+            * my name is lukas rytz, and this is joint work with ...
+            * EPFL
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Some Uses for a Purity System
 
           * Valuable verified documentation for programmers
@@ -74,9 +83,24 @@
 
           * Enables optimizations
             * In Scala, when inlining a method defined in an object, the object initializer only needs to be invoked if it is impure
+          </div>
+
+          <aside class="notes" data-markdown>
+            * to motivate the usefulness of a purity system we enumerate a few examples for
+              which purity information is useful
+            * first of all ❧ helpful documentation ❧ also verified. that also implies it can
+              be trusted to be up to date
+            * then pure expressions enable flexible execution scheduling, this was exploited
+              for instance in the work on deterministic parallel java ❧
+            * finally, purity also enables other kinds of optimizations.
+              * one example in scala is methods defined in singleton objects
+              * scala provides singletons at language level
+              * when inlining a method defined in a singleton, still need to invoke the object initializer ❧ might have effects
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Verifying Purity
 
           * Pure methods implemented with local state are common: local variables, iterators, ...
@@ -87,9 +111,20 @@
             * Ownership types
             * Effect systems based on pointer analysis
             * Region-based effects
+          </div>
+
+          <aside class="notes" data-markdown>
+            * verifying purity: why is it a challenge?
+              * difficulty is that pure methods are often implemented with local state
+            * reasoning about this state modifications is difficult because of aliasing
+            * there are many existing approaches, i won't go into details, but all none of
+              them was fitting our requirements
+            * so what is it that we are looking for?
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Requirements for our System
 
           * Lightweight annotations, easy to use and understand
@@ -99,39 +134,63 @@
           * Identify pure expressions within larger, potentially impure programs
 
           * Applicable to existing code, don't enforce a programming discipline or require refactorings
+          </div>
+
+          <aside class="notes" data-markdown>
+            * the goal of my work is to provide effect systems for the users
+            * so we were looking for system which is easy to understand ❧ lightweight
+            * fit into our framework
+            * we want a system that can identify a subset of a program to be pure, even though
+              the rest of the program might have arbitrary effects
+            * ❧
+          </aside>
         </section>
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Built on Ideas from JPure
 
-          * Modular, intra-procedural effect analysis
-            * Unlike JPure, our system is flow-insensitive, therefore easier to integrate into higher-order languages
+          * **Modular**, intra-procedural effect analysis
+            * Unlike JPure, our system is **flow-insensitive**, therefore easier to integrate into higher-order languages
 
-          * Lightweight effect annotations
+          * **Lightweight** effect annotations
             * Our system can express nested functions with effects on outer parameters
 
-          * Ownership annotations for non-shared state, freshness for methods returning newly allocated objects
+          * **Ownership** annotations for non-shared state, **freshness** for methods returning newly allocated objects
             * We introduce *conditional* freshness which is required for getters
+          </div>
+
+          <aside class="notes" data-markdown>
+            * when i first read about jpure i was very happy because it comes very close to what
+              i described on the previous slide
+            * so our purity system builds on the ideas from jpure, but we had to adjust and extend
+              it to fit our requirements
+            * the main elements are the following: ❧
+          </aside>
         </section>
 
-        <section data-markdown>
-          ## Goal of this Work
+        <section>
+          <div>
+          <h2>Definition of Purity</h2>
 
-          Soundness of the purity effect system:
+          <p>❧</p>
+          <p style="color:rgb(180, 29, 0)">A pure function does not modify any state<br/>
+          that existed before its execution.</p>
+          <p>❧</p><br/>
 
-          ❧
-
-          *A pure function does not modify any state that existed before its execution*
-
-          ❧
-
-          * Same Definition of purity used by other projects
-          * Work on proofs still in progress
+          <ul>
+            <li>Goal of this work: show soundness of the purity effect system</li>
+            <li>Proofs are still work in progress</li>
+          </ul>
+          </div>
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Freshness and Effects
 
           * `@mod(a)` permits modifying the state of parameter `a`
@@ -152,9 +211,19 @@
             return false
           }
           ```
+          </div>
+          <aside class="notes" data-markdown>
+            * to explain how the purity system works we look at a few examples and the
+              corresponding effect annotations
+            * the `@mod` annotation is the main effect annotation. it denotes all parameters
+              that a method can modify.
+            * the `@loc` annotation denotes methods that return freshly allocated objects
+            * in the example...
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Ownership and Locality
 
           * `@local` fields are owned, defines the *locality* of an object
@@ -173,9 +242,13 @@
             }
           }
           ```
+          </div>
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Higher-Order Code
 
           * In `@mod(a)`, parameter `a` can be from an outer method
@@ -191,9 +264,14 @@
             nested()
           }
           ```
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Limitations found in Practice
 
           * Caching: modifications to caches are transparent to the user, but not to the type system: the state is not fresh
@@ -209,6 +287,10 @@
             }
           }
           ```
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
         <section>
@@ -231,6 +313,8 @@
           \ea\)
           </div>
 
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -252,6 +336,8 @@
             </ul>
           </p>
 
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
         <section>
@@ -284,6 +370,9 @@
             \ea
           \ea\]
           </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -310,6 +399,9 @@
             \qquad \text{where } \Gamma_c = \{x:\text{Int}\} \resloc c
           \ea\]
           </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -328,6 +420,9 @@
 
             <li>Stack &amp; continuations: no bare references in terms, no duplication of function arguments through substitution</li>
           </ul>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -347,6 +442,9 @@
             <li>In well-formed states, the locality of fresh variables in \(\,\Gamma\) is ensured
               to be separate from all other state</li>
           </ul>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -369,17 +467,28 @@
             <li>By preservation \(~~c.x := 2~~\) types as pure, but \(c\) is fresh</li>
 
           </ul>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
         <section>
           <h2>Implementation</h2>
           <p>Live-coding demo at the end of the workshop</p>
           <p><img src="images/ee.png" alt="Screenshot Eclipse" style="width:800px;height:auto;"/></p>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           # Q &amp; A
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
@@ -393,11 +502,15 @@
             <a href="http://types.cs.washington.edu/ftfjp2013/">FTfJP 2013</a>, Montpellier<br/><br/>
             Lukas Rytz
           </p>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Big Picture
 
           * A [compiler plugin](https://github.com/lrytz/efftp) for Scala 2.10.1 (`scalac`, REPL, Eclipse)
@@ -405,9 +518,14 @@
           * Effect-annotated code compiles without the plugin (it's a [pluggable type system](http://bracha.org/pluggableTypesPosition.pdf))
           * Currently supports I/O effects, checked exceptions and purity (state effects)
           * Documentation on the [Github Wiki](https://github.com/lrytz/efftp/wiki)
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Syntax
 
           * Effects are annotated on return types of methods
@@ -424,12 +542,17 @@
             ```scala
             def inc(I: Int): Int = i + 1    // impure!
             ```
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Multiple Effect Domains
 
           * Multiple annotations for multiple domains
@@ -443,9 +566,14 @@
             ```scala
             def div(a: Int, b: Int): Int @pure @throws[DivByZero] = ...
             ```
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           ## Effect Polymorphism
 
           * The effect of a higher-order method usually depends on the effect of its argument:
@@ -463,11 +591,20 @@
               g.greet(name)
             }
             ```
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 
-        <section data-markdown>
+        <section>
+          <div data-markdown>
           # Demo!
+          </div>
+
+          <aside class="notes" data-markdown>
+          </aside>
         </section>
 
 <!--
@@ -481,8 +618,6 @@ class A(x: Int) {
           </code></pre>
         </section>
 -->
-
-
       </div>
 
     </div>
