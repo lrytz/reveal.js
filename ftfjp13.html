@@ -68,36 +68,41 @@
           </div>
 
           <aside class="notes" data-markdown>
-            * title
-            * my name is lukas rytz, and this is joint work with ❧
-            * EPFL
+            * hello everybody, so this talk is about a modular and flow-insensitive type system for purity
+            * my name is lukas rytz, and this is joint work with nada amin,
+            * and we are phd students with martin odersky at epfl in lausanne, switzerland
           </aside>
         </section>
 
         <section>
           <div data-markdown>
-          ## Some Uses for a Purity System
+          ## Use Cases for a Purity System
 
-          * Valuable verified documentation for programmers
+          * Verified documentation for programmers
 
-          * Provides flexibility in scheduling execution
-            * [DPJ](http://dpj.cs.uiuc.edu/DPJ/Home.html) uses effects to track noninterference of expressions and execute them in parallel
+          * Flexibility in scheduling execution
+            * [DPJ](http://dpj.cs.uiuc.edu/DPJ/Home.html) tracks noninterference of expressions and executes them in parallel
 
           * Enables optimizations
             * In Scala, when inlining a method defined in an object, the object initializer only needs to be invoked if it is impure
           </div>
 
-          <aside class="notes" data-markdown>
-            * to motivate the usefulness of a purity system we enumerate a few examples for
+          <aside class="notes" data-markdown style="font-size:0.9em">
+            * to motivate the usefulness of a purity system we look at a few examples for
               which purity information is useful
-            * first of all ❧ helpful documentation ❧ also verified. that also implies it can
-              be trusted to be up to date
-            * then pure expressions enable flexible execution scheduling, this was exploited
-              for instance in the work on deterministic parallel java ❧
+            * first of all ❧ helpful documentation ❧ also verified. that implies that it is
+              ensured to be up to date
+            * second, purity information enables some flexibility in execution scheduling:
+              pure expressions cannot interfere and for instance execute in parallel.
+              this was exploited for instance in the work on deterministic parallel java ❧
             * finally, purity also enables other kinds of optimizations.
-              * one example in scala is methods defined in singleton objects
-              * scala provides singletons at language level
-              * when inlining a method defined in a singleton, still need to invoke the object initializer ❧ might have effects
+              * one example in scala is inlining of methods defined in singleton objects
+              * scala provides singletons at language level.
+                * the constructor of a singleton might have arbitrary side-effects
+              * when inlining a method defined in a singleton, the compiler usually does not know
+                if the object is already initialized
+              * therefore, in addition to the inlined code, it also has to emit an invocation
+                of the initializer
           </aside>
         </section>
 
@@ -105,9 +110,9 @@
           <div data-markdown>
           ## Verifying Purity
 
-          * Pure methods implemented with local state are common: local variables, iterators, ...
-          * Aliasing makes tracking purity difficult
-          * Many existing approaches:
+          * Methods that modify only local state (local variables, iterators, etc.) are pure
+          * Challenge: aliasing makes tracking state difficult
+          * Existing techniques:
             * State monad
             * Program verification (separation logic)
             * Ownership types
@@ -116,32 +121,39 @@
           </div>
 
           <aside class="notes" data-markdown>
-            * verifying purity: why is it a challenge?
-              * difficulty is that pure methods are often implemented with local state
-            * reasoning about this state modifications is difficult because of aliasing
-            * there are many existing approaches, i won't go into details, but all none of
-              them was fitting our requirements
-            * so what is it that we are looking for?
+            * ok, so verifying purity: how can we do that, and why is it a challenge?
+              * in languages like java, pure methods are often implemented with local state, but
+                they have no observable effects for their clients
+              * a purity system needs to be able to understand such code
+            * however, reasoning about this state modifications is difficult because these
+              languages permit arbitrary aliasing
+            * there are many existing techniques,
+            * but i will not go into details, because none them was really fitting our requirements
+            * so then the question obviously is: what is it that we are looking for?
           </aside>
         </section>
 
         <section>
           <div data-markdown>
-          ## Requirements for our System
+          ## Our Requirements
+
+          * Modular effect system that integrates with our generic effect checking framework
 
           * Lightweight annotations, easy to use and understand
 
-          * Modular system that integrates with our generic effect checking framework
-
           * Identify pure expressions within larger, potentially impure programs
 
-          * Applicable to existing code, don't enforce a programming discipline or require refactorings
+          * Applicable to existing code, does not enforce a programming discipline or require refactorings
           </div>
 
           <aside class="notes" data-markdown>
-            * the goal of my work is to provide effect systems for the users
-            * so we were looking for system which is easy to understand ❧ lightweight
-            * fit into our framework
+            * so what are the requirements for our purity system?
+            * the high-level goal of my works is to make effect systems accessible for everyone
+              * we want to enable effect systems to enter mainstream languages
+              * and for that we designed a generic framework for checking effects of multiple
+                domains, and we have an implementation for scala.
+            * so we were looking for a purity system fit into our framework
+            * other requirements are: it has to be easy to understand ❧ lightweight
             * we want a system that can identify a subset of a program to be pure, even though
               the rest of the program might have arbitrary effects
             * ❧
@@ -160,15 +172,15 @@
             * Our system can express nested functions with effects on outer parameters
 
           * **Ownership** annotations for non-shared state, **freshness** for methods returning newly allocated objects
-            * We introduce *conditional* freshness which is required for getters
+            * To express getters, we introduce *conditional* freshness
           </div>
 
           <aside class="notes" data-markdown>
+            * so the purity system i present here is based on ideas from jpure
             * when i first read about jpure i was very happy because it comes very close to what
               i described on the previous slide
-            * so our purity system builds on the ideas from jpure, but we had to adjust and extend
-              it to fit our requirements
-            * the main elements are the following: ❧
+            * however, we had to adjust and extend jpure in a few aspects to fit our requirements
+            * the main elements of our purity system are the following: ❧
           </aside>
         </section>
 
@@ -182,7 +194,7 @@
           <p>❧</p><br/>
 
           <ul>
-            <li>Goal of this work: show soundness of the purity effect system</li>
+            <li>Goal: show soundness of the purity effect system</li>
             <li>Proofs are still work in progress</li>
           </ul>
           </div>
@@ -191,16 +203,17 @@
             * Before looking into how the effect system work in detail, we give the definition
               of purity that the system uses
             * Read it ❧
-            * So the goal of the work presented today is to show soundness ❧
+            * So the goal of the work that i present today is to show soundness ❧
             * As mentioned in our paper, the proofs are still work in progres
-            * Unfortunately, my thesis deadline is kind of delaying things a bit
+            * Unfortunately, my thesis deadline, which is end of this month, is kind of
+              delaying things a little bit
           </aside>
         </section>
 
 
         <section>
           <div data-markdown>
-          ## Freshness and Effects
+          ## Effects and Freshness
 
           * `@mod(a)` permits modifying the state of parameter `a`
           * `@loc()` for methods returning freshly allocated objects
@@ -211,7 +224,7 @@
             def next(): T @mod(this)
           }
           trait List[+T] {
-            def iterator(): Iterator[T] @loc()
+            def iterator: Iterator[T] @loc()
           }
           def contains(l: List[Int], e: Int): Boolean @mod() = {
             val it = l.iterator
@@ -236,8 +249,8 @@
           <div data-markdown>
           ## Ownership and Locality
 
-          * `@local` fields are owned, defines the *locality* of an object
-          * An object is only fresh if all objects in its locality are fresh
+          * `@local` fields are owned by the object
+          * An object is only fresh if all objects in its *locality* are fresh
           * `@mod(a)` permits modifying any state in the locality of `a`
 
           ```scala
@@ -259,8 +272,13 @@
               concept of owned state, that is state which is never shared between objects
             * this is however common: for instance, an array buffer owns its array, each
               buffer has its own array
-            * modifications to that array can be treated as modifications to the buffer
-            * the `@local` annotation defines ownership, ❧
+            * for that reason, modifications to that array can be treated as modifications to the buffer
+            * to express this in our purity system, the `@local` annotation defines ownership
+            * the state of fields marked `@local` belongs to the owner object
+            * so the locality of an object is the state of its fields, plus the state of all
+              owned objects ❧
+            * the effect system ensures that an object is only fresh ❧
+            * ❧
           </aside>
         </section>
 
@@ -268,9 +286,9 @@
           <div data-markdown>
           ## Higher-Order Code
 
-          * In `@mod(a)`, parameter `a` can be from an outer method
+          * Parameter `a` in `@mod(a)` can belong to an outer method
 
-          * `@loc(t)`: fresh if `t` is fresh, e.g. getters of local fields
+          * A method with `@loc(t)` is fresh if `t` is fresh, e.g. getters for local fields
 
           ```scala
           trait A {
@@ -286,18 +304,20 @@
           <aside class="notes" data-markdown>
             * to express nested and higher-order code, effect annotations can refer to parameters
               from their environment
-            * additionally, methods can be declared to return an object from a specific locality.
-              * this implies that this method is fresh if the locality is fresh
+            * additionally, methods can be declared to return an object from a specific locality
+              using the `@loc()` annotation.
+              * this implies that the method is fresh if the locality in the `@loc`
+                annotation is fresh
           </aside>
         </section>
 
         <section>
           <div data-markdown>
-          ## Limitations found in Practice
+          ## Limitations in Practice
 
           * Caching: cache updates are transparent to the user, but not to the type system
 
-          * Collections of fresh objects: type arguments with a locality not (yet) supported
+          * Collections of fresh objects: type arguments with locality not (yet) supported
 
           ```scala
           def t(): Int @mod() = {
@@ -311,10 +331,12 @@
           </div>
 
           <aside class="notes" data-markdown>
-            * to make the discussion of the effect system more complete we also mention coding
-              patterns that use local state which cannot be expressed in the purity system
-            * chaching: ❧, for example a memoized function modifies its cache, ❧
-            * ❧
+            * there are a few coding patterns we discovered in practice that cannot be
+              expressed in our purity system
+            * the first category of examples involve chaching: ❧
+            * for example a function with memoization modifies its cache, which is a modification
+              of existing state, but this effect is not visible to clients
+            * another example that cannot be expressed is collections containing fresh objects: ❧
           </aside>
         </section>
 
@@ -341,19 +363,19 @@
           <aside class="notes" data-markdown>
             * to formalize the type system we use a lambda calculus with mutable records
             * it has let bindings and all terms are in A-normal form - naming all values
-              enables tracking them in the type system
+              enables tracking objects more easily in the type system
             * record literals, ownership with optional `local` annotation on fields
             * selections, field updates
             * function types, effect and locality
             * typing statement
-              * there is not enough time to study the typing rules, but we build an intuition
-                with a few examples
+              * there is not enough time to study the inference rules in detail
+              * but we build an intuition for typing using a few examples
           </aside>
         </section>
 
 
         <section>
-          <h2>Example Using a local Counter</h2>
+          <h2>Example with a Local Counter</h2>
 
           <div style="font-size:0.9em">\(\boxed{
             \tlet c = \{x = 1\} \tin \\
@@ -372,12 +394,16 @@
 
           <aside class="notes" data-markdown>
             * explain example ❧
-            * to see how freshness and effects are computed we look at a few typing derivations
+            * the overall example is pure, it does not have any effect on existing state
+            * the function `inc` has the effect of modifying object `c` from its environment
+            * since object `c` is freshly allocated within the example, effects on it are
+              masked when the variable gets out of scope
+            * to see how the example is type checked we look at a few typing derivations
           </aside>
         </section>
 
         <section>
-          <h2>Typing the Body of \(\mathit{inc}\)</h2>
+          <h2>Typing the \(\mathit{inc}\) Function</h2>
 
           <div style="float:right;font-size:0.7em">
           \(\boxed{
@@ -416,7 +442,7 @@
 
 
         <section>
-          <h2>Effect on Counter is Masked</h2>
+          <h2>Effects on Counter are Masked</h2>
           <div style="float:right;font-size:0.7em">
           \(\boxed{
             \tlet c = \{x = 1\} \tin \\
@@ -456,6 +482,7 @@
                 <li>a heap \(~H ::= \emptyset \mid H, r \mapsto \{\mlocal l = v\}\)</li>
                 <li>a stack \(~V ::= \emptyset \mid V, x \mapsto v\)</li>
                 <li>a continuation \(~K ::= \halt \mid [x;V;K;p]\)</li>
+                <li>an expression \(p\)</li>
               </ul>
             </li>
 
@@ -478,10 +505,10 @@
             <li>Progress: \(~\state{H,V,K,p} \evalto \state{H',V',K',p'}~\) goes from well-formed to well-formed</li>
             <li>Preservation: if \(p\) is pure, then so is \(p'\)</li>
 
-            <li>Some variables needs to be <em>fresh</em> in the typing environment:
+            <li>Certain variables need to be <em>fresh</em> in the typing environment:
               <ul>
                 <li>\(\tlet c = \{x=1\} \tin c.x := 2~~\) evaluates to \(~~c.s := 2\)</li>
-                <li>Preservation requires purity, so \(~c: \{x:\text{Int}\} \resloc \colr{RedOrange}{\fresh} \in \Gamma\)</li>
+                <li>Preservation requires purity, so \(~c: \{x:\text{Int}\} \resloc \colr{yellow-back}{\fresh} \in \Gamma\)</li>
               </ul>
             </li>
 
@@ -502,7 +529,7 @@
         <section>
           <h2>Soundness</h2>
           <ul>
-            <li>Purity: if \(p\) types as pure, then its evaluation does not modify existing state &mdash; however it can modify fresh state:</li>
+            <li>Purity: if \(p\) types as pure, then its evaluation does not modify existing state &mdash; however it can modify fresh state</li>
 
             <div style="font-size:0.9em">
             \[\ba{l}
@@ -515,7 +542,7 @@
             \ea\]
             </div><br/>
 
-            <li>By preservation \(~~c.x := 2~~\) types as pure, but \(c\) is fresh</li>
+            <li>By preservation \(~~c.x := 2~~\) types as pure, but \(c\) is modified</li>
 
           </ul>
 
@@ -529,7 +556,7 @@
 
         <section>
           <h2>Implementation</h2>
-          <p>Live-coding demo at the end of the workshop</p>
+          <p>Live demo at the end of the workshop</p>
           <p><img src="images/ee.png" alt="Screenshot Eclipse" style="width:800px;height:auto;"/></p>
 
           <aside class="notes" data-markdown>
@@ -542,7 +569,9 @@
 
         <section>
           <div data-markdown>
-          # Q &amp; A
+          # Thank you!
+          # ❧
+          ### Q &amp; A
           </div>
 
           <aside class="notes" data-markdown>
