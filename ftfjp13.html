@@ -176,7 +176,8 @@
           </div>
 
           <aside class="notes" data-markdown>
-            * so the purity system i present here is based on ideas from jpure
+            * so the purity system which i present today is based on jpure, a purity system for
+              java by david pearce
             * when i first read about jpure i was very happy because it comes very close to what
               i described on the previous slide
             * however, we had to adjust and extend jpure in a few aspects to fit our requirements
@@ -277,7 +278,8 @@
             * the state of fields marked `@local` belongs to the owner object
             * so the locality of an object is the state of its fields, plus the state of all
               owned objects ❧
-            * the effect system ensures that an object is only fresh ❧
+            * the effect system ensures that an object can only be considered fresh if all the
+              state in its locality is known to be fresh
             * ❧
           </aside>
         </section>
@@ -363,7 +365,7 @@
           <aside class="notes" data-markdown>
             * to formalize the type system we use a lambda calculus with mutable records
             * it has let bindings and all terms are in A-normal form - naming all values
-              enables tracking objects more easily in the type system
+              enables tracking the localities objects more easily in the type system
             * record literals, ownership with optional `local` annotation on fields
             * selections, field updates
             * function types, effect and locality
@@ -493,7 +495,7 @@
 
           <aside class="notes" data-markdown>
             * in order to prove soundness of the type system we define a dynamic semantics which
-              uses a stack and continuation based machine
+              uses an abstract machine based on stacks and continuations
             * each machine state consists of ❧
           </aside>
         </section>
